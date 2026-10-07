@@ -31,6 +31,10 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { ALL_PAGES, DOC_SECTIONS, findPage, findPageById } from "./docsData";
+import GuideArticle from "./GuideArticle";
+import DocumentationHome from "./DocumentationHome";
+import { GROUPS, getGuide } from "./guideContent";
+import "./editorial.css";
 
 const ASTRA_APP_URL =
   import.meta.env.VITE_ASTRA_APP_URL || "http://localhost:3000";
@@ -52,191 +56,6 @@ const ICONS = {
   wallet: Wallet,
 };
 
-const GOALS = [
-  {
-    id: "new",
-    label: "New to ASTRA",
-    note: "Get set up and see value",
-    icon: Sparkle,
-  },
-  {
-    id: "connect",
-    label: "Connect data",
-    note: "Ingest your telemetry",
-    icon: Database,
-  },
-  {
-    id: "investigate",
-    label: "Investigate",
-    note: "Find and understand issues",
-    icon: MagnifyingGlass,
-  },
-  {
-    id: "respond",
-    label: "Respond",
-    note: "Take action and resolve",
-    icon: Bell,
-  },
-];
-
-const JOURNEYS = {
-  new: [
-    [
-      "Connect your environment",
-      "Choose the collection path that matches your systems.",
-      "collect-data",
-      "overview",
-    ],
-    [
-      "Verify telemetry",
-      "Confirm that data is arriving and correctly scoped.",
-      "collect-data",
-      "collection-health",
-    ],
-    [
-      "Explore your entities",
-      "Navigate workloads, services, and relationships.",
-      "infrastructure",
-      "workloads",
-    ],
-    [
-      "Create your first monitor",
-      "Detect an issue and route it to responders.",
-      "monitoring",
-      "first-monitor",
-    ],
-  ],
-  connect: [
-    [
-      "Choose a source",
-      "Compare cloud, Agent, Kubernetes, and OTLP collection.",
-      "collect-data",
-      "overview",
-    ],
-    [
-      "Configure access",
-      "Follow the least-privilege setup for your source.",
-      "collect-data",
-      "aws",
-    ],
-    [
-      "Verify collection",
-      "Review activity, coverage, and actionable errors.",
-      "collect-data",
-      "collection-health",
-    ],
-    [
-      "Explore the result",
-      "Open the canonical workload or service.",
-      "infrastructure",
-      "workloads",
-    ],
-  ],
-  investigate: [
-    [
-      "Start with a workload",
-      "Choose the affected infrastructure or service.",
-      "infrastructure",
-      "workloads",
-    ],
-    [
-      "Review signals",
-      "Compare metrics, logs, traces, requests, and events.",
-      "telemetry",
-      "metrics",
-    ],
-    [
-      "Follow relationships",
-      "Use topology to understand dependencies.",
-      "infrastructure",
-      "topology",
-    ],
-    [
-      "Capture the finding",
-      "Create a dashboard or continue with ASTRA AI.",
-      "astra-intelligence",
-      "analyzer",
-    ],
-  ],
-  respond: [
-    [
-      "Review the incident",
-      "Understand impact, evidence, and affected entities.",
-      "monitoring",
-      "incidents",
-    ],
-    [
-      "Confirm impact",
-      "Validate scope using telemetry and topology.",
-      "monitoring",
-      "triage",
-    ],
-    [
-      "Notify owners",
-      "Route updates to messaging or ITSM destinations.",
-      "notifications",
-      "notification-overview",
-    ],
-    [
-      "Track recovery",
-      "Watch health and telemetry return to normal.",
-      "infrastructure",
-      "service-health",
-    ],
-  ],
-};
-
-const HOME_AREAS = [
-  [
-    "Infrastructure",
-    "Hosts, Kubernetes, databases, cloud resources, and topology",
-    Cloud,
-    "infrastructure",
-    "overview",
-  ],
-  [
-    "Applications and services",
-    "APM, services, requests, errors, and sessions",
-    Cube,
-    "applications",
-    "overview",
-  ],
-  [
-    "Explore telemetry",
-    "Metrics, logs, traces, and runtime events",
-    ChartBar,
-    "telemetry",
-    "metrics",
-  ],
-  [
-    "Monitor and respond",
-    "Triage, monitors, incidents, and synthetics",
-    Bell,
-    "monitoring",
-    "triage",
-  ],
-  [
-    "Costs and optimization",
-    "Unit economics, attribution, and optimization",
-    Wallet,
-    "costs",
-    "unit-economics",
-  ],
-  [
-    "ASTRA Intelligence",
-    "AI-assisted investigations, analysis, and code context",
-    Brain,
-    "astra-intelligence",
-    "astra-agents",
-  ],
-];
-
-const POPULAR = [
-  ["Install the Linux Host Agent", "collect-data", "host-agent"],
-  ["Connect an AWS account", "collect-data", "aws"],
-  ["Send OpenTelemetry data", "collect-data", "opentelemetry"],
-  ["Explore infrastructure topology", "infrastructure", "topology"],
-];
 
 function AstraMark() {
   return (
@@ -250,7 +69,7 @@ function AstraMark() {
 }
 
 function routeFromHash() {
-  const route = window.location.hash.replace(/^#\/?/, "");
+  const route = window.location.hash.replace(/^#\/?/, "").split('?')[0];
   if (!route) return null;
   const [sectionId, pageId] = route.split("/");
   return findPage(sectionId, pageId) ? { sectionId, pageId } : null;
@@ -285,7 +104,7 @@ function Sidebar({
         <span>Home</span>
       </button>
       <nav className="docs-tree">
-        {DOC_SECTIONS.map((section) => {
+        {GROUPS.map((group) => <div className="navigation-group" key={group.label}><p className="navigation-group-label">{group.label}</p>{DOC_SECTIONS.filter(section => group.ids.includes(section.id)).map((section) => {
           const Icon = ICONS[section.icon];
           const isOpen = expanded.has(section.id);
           const isCurrent = route?.sectionId === section.id;
@@ -312,8 +131,8 @@ function Sidebar({
               {isOpen && (
                 <div className="tree-children">
                   {section.pages.map((item) => (
+                    <div key={item.id}>
                     <button
-                      key={item.id}
                       className={
                         route?.sectionId === section.id &&
                         route?.pageId === item.id
@@ -325,12 +144,13 @@ function Sidebar({
                     >
                       <span>{item.title}</span>
                     </button>
+                    </div>
                   ))}
                 </div>
               )}
             </div>
           );
-        })}
+        })}</div>)}
       </nav>
       <div className="nav-context">
         Viewing
@@ -345,14 +165,32 @@ function Sidebar({
 }
 
 function SearchBox({ query, setQuery, results, onPage, compact = false }) {
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState(0);
+  const choose = (item) => { setOpen(false); onPage(item.sectionId, item.id); };
   return (
-    <div className={compact ? "search-wrap is-compact" : "search-wrap"}>
+    <div className={compact ? "search-wrap is-compact" : "search-wrap"}
+      onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false); }}>
       <div className="hero-search">
         <MagnifyingGlass size={compact ? 18 : 21} aria-hidden="true" />
         <input
           id={compact ? "global-search" : "docs-search"}
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          aria-label="Search documentation"
+          role="combobox"
+          aria-expanded={open && Boolean(query)}
+          aria-controls={compact ? 'header-results' : 'home-results'}
+          aria-activedescendant={open && results[selected] ? `${compact ? 'header' : 'home'}-result-${selected}` : undefined}
+          onFocus={() => setOpen(true)}
+          onChange={(event) => { setQuery(event.target.value); setOpen(true); setSelected(0); }}
+          onKeyDown={event => {
+            if (event.key === 'Escape') { setOpen(false); event.currentTarget.blur(); }
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+              event.preventDefault(); setOpen(true);
+              setSelected(current => Math.max(0, Math.min(results.length - 1, current + (event.key === 'ArrowDown' ? 1 : -1))));
+            }
+            if (event.key === 'Enter' && results[selected]) { event.preventDefault(); choose(results[selected]); }
+          }}
           placeholder="Search documentation, guides, and product areas"
           autoComplete="off"
         />
@@ -368,22 +206,26 @@ function SearchBox({ query, setQuery, results, onPage, compact = false }) {
         {!compact && <kbd>Ctrl K</kbd>}
       </div>
       {!compact && (
-        <button className="search-button" type="button">
+        <button className="search-button" type="button" onClick={() => { setOpen(true); document.getElementById('docs-search')?.focus(); }}>
           Search
         </button>
       )}
-      {query && (
-        <div className="search-results" role="listbox">
+      {query && open && (
+        <div className="search-results" role="listbox" id={compact ? 'header-results' : 'home-results'} aria-label="Matching guides">
           {results.length ? (
-            results.map((result) => (
+            results.map((result, index) => (
               <button
                 key={`${result.sectionId}-${result.id}`}
                 type="button"
-                onClick={() => onPage(result.sectionId, result.id)}
+                role="option"
+                aria-selected={selected === index}
+                id={`${compact ? 'header' : 'home'}-result-${index}`}
+                onClick={() => choose(result)}
               >
                 <span>
                   <small>{result.sectionLabel}</small>
                   {result.title}
+                  <small className="search-excerpt">{result.summary}</small>
                 </span>
                 <ArrowRight size={14} />
               </button>
@@ -399,370 +241,11 @@ function SearchBox({ query, setQuery, results, onPage, compact = false }) {
   );
 }
 
-function HomePage({ goal, setGoal, onPage, query, setQuery, results }) {
-  return (
-    <>
-      <section className="hero" aria-labelledby="page-title">
-        <p className="eyebrow">ASTRA DOCUMENTATION</p>
-        <h1 id="page-title">What do you want to accomplish?</h1>
-        <p className="hero-copy">
-          Choose a goal and get a guided path to help you be successful with
-          ASTRA.
-        </p>
-        <SearchBox
-          query={query}
-          setQuery={setQuery}
-          results={results}
-          onPage={onPage}
-        />
-      </section>
-
-      <section className="goals" aria-label="Choose a documentation goal">
-        {GOALS.map(({ id, label, note, icon: Icon }) => (
-          <button
-            key={id}
-            className={goal === id ? "goal is-active" : "goal"}
-            type="button"
-            onClick={() => setGoal(id)}
-            aria-pressed={goal === id}
-          >
-            <Icon size={25} weight={goal === id ? "duotone" : "regular"} />
-            <span>
-              <strong>{label}</strong>
-              <small>{note}</small>
-            </span>
-          </button>
-        ))}
-      </section>
-
-      <section className="journey" aria-labelledby="journey-title">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">GUIDED PATH</p>
-            <h2 id="journey-title">Your journey to value</h2>
-          </div>
-          <p>Follow these steps to move from setup to useful insight.</p>
-        </div>
-        <div className="journey-track">
-          {JOURNEYS[goal].map(([title, copy, sectionId, pageId], index) => (
-            <article className="journey-step" key={title}>
-              <div className="step-marker">
-                <span>{index + 1}</span>
-                <i />
-              </div>
-              <h3>{title}</h3>
-              <p>{copy}</p>
-              <button type="button" onClick={() => onPage(sectionId, pageId)}>
-                Open guide <ArrowRight size={14} />
-              </button>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="dashboard-grid">
-        <article className="panel recommended">
-          <div className="panel-title">
-            <div>
-              <p className="eyebrow">GET STARTED</p>
-              <h2>Recommended next</h2>
-            </div>
-            <span>1 of 4 complete</span>
-          </div>
-          <div className="progress" aria-label="25 percent complete">
-            <i />
-          </div>
-          {[
-            [
-              "Ingest your first data source",
-              "Connect a system and start receiving telemetry.",
-              true,
-              "collect-data",
-              "overview",
-            ],
-            [
-              "Explore your data",
-              "Navigate canonical entities and view telemetry.",
-              false,
-              "infrastructure",
-              "workloads",
-            ],
-            [
-              "Create a monitor",
-              "Set up an alert to detect an issue.",
-              false,
-              "monitoring",
-              "first-monitor",
-            ],
-            [
-              "Build a dashboard",
-              "Visualize the measurements your team relies on.",
-              false,
-              "dashboards-reports",
-              "dashboards",
-            ],
-          ].map(([title, copy, done, sectionId, pageId]) => (
-            <button
-              className="check-row"
-              type="button"
-              key={title}
-              onClick={() => onPage(sectionId, pageId)}
-            >
-              <span className={done ? "check is-done" : "check"}>
-                {done && <Check size={15} weight="bold" />}
-              </span>
-              <span>
-                <strong>{title}</strong>
-                <small>{copy}</small>
-              </span>
-              <ArrowRight size={15} />
-            </button>
-          ))}
-          <button
-            className="inline-link"
-            type="button"
-            onClick={() => onPage("get-started", "quickstart")}
-          >
-            View the full getting started guide <ArrowRight size={14} />
-          </button>
-        </article>
-
-        <article className="panel product-areas">
-          <div className="panel-title">
-            <div>
-              <p className="eyebrow">BROWSE</p>
-              <h2>Browse by product area</h2>
-              <p>Find documentation for a specific area of ASTRA.</p>
-            </div>
-          </div>
-          <div className="product-grid">
-            {HOME_AREAS.map(([title, copy, Icon, sectionId, pageId]) => (
-              <button
-                type="button"
-                key={title}
-                onClick={() => onPage(sectionId, pageId)}
-              >
-                <Icon size={20} />
-                <span>
-                  <strong>{title}</strong>
-                  <small>{copy}</small>
-                </span>
-                <ArrowRight size={14} />
-              </button>
-            ))}
-          </div>
-        </article>
-      </section>
-
-      <section className="bottom-grid">
-        <article className="link-panel">
-          <div className="link-panel-head">
-            <h2>
-              <BookOpenText size={19} /> Popular guides
-            </h2>
-            <button
-              type="button"
-              onClick={() => onPage("get-started", "quickstart")}
-            >
-              View all guides <ArrowRight size={13} />
-            </button>
-          </div>
-          {POPULAR.map(([title, sectionId, pageId]) => (
-            <button
-              type="button"
-              onClick={() => onPage(sectionId, pageId)}
-              key={title}
-            >
-              {title}
-              <ArrowRight size={13} />
-            </button>
-          ))}
-        </article>
-        <article className="link-panel">
-          <div className="link-panel-head">
-            <h2>
-              <Heartbeat size={19} /> Recently updated
-            </h2>
-            <button
-              type="button"
-              onClick={() => onPage("whats-new", "latest-docs")}
-            >
-              View all updates <ArrowRight size={13} />
-            </button>
-          </div>
-          {[
-            [
-              "Linux Host Agent collection guide",
-              "Oct 4, 2026",
-              "collect-data",
-              "host-agent",
-            ],
-            [
-              "Infrastructure topology",
-              "Oct 2, 2026",
-              "infrastructure",
-              "topology",
-            ],
-            ["Monitor alert noise", "Sep 30, 2026", "monitoring", "monitors"],
-            [
-              "Microsoft Teams integration",
-              "Sep 28, 2026",
-              "notifications",
-              "teams",
-            ],
-          ].map(([title, date, sectionId, pageId], index) => (
-            <button
-              type="button"
-              onClick={() => onPage(sectionId, pageId)}
-              key={title}
-            >
-              <span>
-                {title}
-                {index === 0 && <em>NEW</em>}
-              </span>
-              <time>{date}</time>
-            </button>
-          ))}
-        </article>
-      </section>
-    </>
-  );
-}
-
-function ArticlePage({ section, page, onHome, onPage }) {
-  const related = page.related.map(findPageById).filter(Boolean).slice(0, 3);
-  return (
-    <div className="article-layout">
-      <article className="article">
-        <nav className="breadcrumbs" aria-label="Breadcrumb">
-          <button type="button" onClick={onHome}>
-            Docs
-          </button>
-          <ArrowRight size={12} />
-          <span>{section.label}</span>
-          <ArrowRight size={12} />
-          <strong>{page.title}</strong>
-        </nav>
-        <header className="article-hero">
-          <p className="eyebrow">{section.label.toUpperCase()}</p>
-          <h1>{page.title}</h1>
-          <p>{page.summary}</p>
-          <div className="article-meta">
-            <span>
-              <Hash size={14} /> {section.id}/{page.id}
-            </span>
-            <span>Customer guide</span>
-          </div>
-        </header>
-
-        <section id="overview" className="article-section">
-          <h2>Overview</h2>
-          <p>
-            {page.summary} This guide explains the supported workflow and the
-            evidence you can expect to see in ASTRA.
-          </p>
-        </section>
-
-        <section id="capabilities" className="article-section">
-          <h2>What you can do</h2>
-          <div className="capability-list">
-            {page.capabilities.map((item) => (
-              <div key={item}>
-                <span>
-                  <Check size={14} weight="bold" />
-                </span>
-                <p>{item}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section id="steps" className="article-section">
-          <h2>How to use it</h2>
-          <ol className="article-steps">
-            {page.steps.map((item, index) => (
-              <li key={item}>
-                <span>{index + 1}</span>
-                <div>
-                  <strong>{item}</strong>
-                  <p>
-                    Complete this step in the relevant ASTRA view, then confirm
-                    the expected status or data before continuing.
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <aside className="note" id="permissions">
-          <Question size={20} weight="duotone" />
-          <div>
-            <strong>Access and data scope</strong>
-            <p>
-              ASTRA shows only the organizations, projects, environments, and
-              telemetry permitted by your current role. Contact your
-              organization administrator if an expected option is unavailable.
-            </p>
-          </div>
-        </aside>
-
-        <section id="next" className="article-section related-guides">
-          <h2>Related guides</h2>
-          <div>
-            {related.length ? (
-              related.map((item) => (
-                <button
-                  type="button"
-                  key={`${item.sectionId}-${item.id}`}
-                  onClick={() => onPage(item.sectionId, item.id)}
-                >
-                  <small>{item.sectionLabel}</small>
-                  <strong>{item.title}</strong>
-                  <span>{item.summary}</span>
-                  <ArrowRight size={16} />
-                </button>
-              ))
-            ) : (
-              <button type="button" onClick={onHome}>
-                <small>ASTRA Docs</small>
-                <strong>Browse all guides</strong>
-                <span>
-                  Return to the documentation home and choose another goal.
-                </span>
-                <ArrowRight size={16} />
-              </button>
-            )}
-          </div>
-        </section>
-
-        <div className="article-footer-actions">
-          <button type="button" onClick={onHome}>
-            <ArrowLeft size={15} /> Documentation home
-          </button>
-          <span>
-            Was this page helpful? <button type="button">Yes</button>
-            <button type="button">No</button>
-          </span>
-        </div>
-      </article>
-      <aside className="on-this-page">
-        <strong>On this page</strong>
-        <a href="#overview">Overview</a>
-        <a href="#capabilities">What you can do</a>
-        <a href="#steps">How to use it</a>
-        <a href="#permissions">Access and data scope</a>
-        <a href="#next">Related guides</a>
-      </aside>
-    </div>
-  );
-}
 
 export function App() {
   const [theme, setTheme] = useState(
     () => localStorage.getItem("astra-docs-theme") || "light",
   );
-  const [goal, setGoal] = useState("new");
   const [query, setQuery] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [route, setRoute] = useState(routeFromHash);
@@ -776,7 +259,11 @@ export function App() {
   }, [theme]);
 
   useEffect(() => {
-    const syncRoute = () => setRoute(routeFromHash());
+    const syncRoute = () => {
+      const next = routeFromHash();
+      setRoute(next);
+      if (next) setExpanded(current => new Set([...current, next.sectionId]));
+    };
     window.addEventListener("hashchange", syncRoute);
     return () => window.removeEventListener("hashchange", syncRoute);
   }, []);
@@ -795,11 +282,11 @@ export function App() {
   const searchResults = useMemo(() => {
     const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
     if (!terms.length) return [];
-    return ALL_PAGES.filter((item) => {
-      const text =
-        `${item.sectionLabel} ${item.title} ${item.summary} ${item.capabilities.join(" ")}`.toLowerCase();
-      return terms.every((term) => text.includes(term));
-    }).slice(0, 8);
+    return ALL_PAGES.map(item => {
+      const title = item.title.toLowerCase();
+      const text = `${item.sectionLabel} ${item.title} ${item.summary} ${JSON.stringify(getGuide(DOC_SECTIONS.find(section => section.id === item.sectionId), item).sections)}`.toLowerCase();
+      return { item, matches: terms.every(term => text.includes(term)), score: terms.reduce((score,term) => score + (title.includes(term) ? 30 : 0) + Math.min(20,text.split(term).length - 1),0) };
+    }).filter(result => result.matches).sort((a,b) => b.score - a.score).slice(0,8).map(result => result.item);
   }, [query]);
 
   const onToggle = (sectionId) =>
@@ -828,6 +315,9 @@ export function App() {
   };
 
   const active = route ? findPage(route.sectionId, route.pageId) : null;
+  useEffect(() => {
+    document.title = active ? `${active.page.title} | ASTRA Docs` : 'ASTRA documentation | Learn, investigate, respond';
+  }, [active?.page.id]);
 
   return (
     <div className="docs-app">
@@ -868,7 +358,7 @@ export function App() {
             type="button"
             onClick={() => onPage("troubleshooting", "troubleshoot-collection")}
           >
-            Support
+            Get help
           </button>
           <button
             className="theme-toggle"
@@ -909,16 +399,15 @@ export function App() {
 
       <main className={active ? "main is-article" : "main"} id="top">
         {active ? (
-          <ArticlePage
+            <GuideArticle
+              key={`${active.section.id}/${active.page.id}`}
             section={active.section}
             page={active.page}
             onHome={onHome}
             onPage={onPage}
           />
         ) : (
-          <HomePage
-            goal={goal}
-            setGoal={setGoal}
+          <DocumentationHome
             onPage={onPage}
             query={query}
             setQuery={setQuery}
@@ -940,7 +429,7 @@ export function App() {
                 onPage("troubleshooting", "troubleshoot-collection")
               }
             >
-              <Question size={15} /> Support
+              <Question size={15} /> Troubleshooting
             </button>
             <button
               type="button"

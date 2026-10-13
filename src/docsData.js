@@ -139,7 +139,7 @@ export const DOC_SECTIONS = [
       page(
         "azure",
         "Connect Microsoft Azure",
-        "Connect Azure subscriptions and bring supported resource context into ASTRA.",
+        "Choose Azure portal, Azure CLI, or secretless Workload Identity Federation for a subscription.",
         [
           "Subscription-scoped discovery",
           "Resource inventory",
@@ -147,16 +147,19 @@ export const DOC_SECTIONS = [
         ],
         [
           "Open Integrations → Azure",
-          "Register an Entra app and assign subscription access",
-          "Enter the client secret value and verify locations",
+          "Choose portal, CLI, or federation",
+          "Create the Entra app and assign subscription Reader",
           "Choose regions and sources, then inspect collection",
         ],
         ["collection-health"],
       ),
+      page("azure-portal", "Azure · Portal setup", "Create an Entra app and client secret in the Azure portal, then verify the subscription in ASTRA.", ["Portal instructions", "Client-secret connection", "Subscription Reader"], ["Check administrators and permissions", "Create the app and assign Reader", "Copy IDs and secret Value", "Verify and save"], ["azure"]),
+      page("azure-cli", "Azure · CLI setup", "Run ASTRA's generated PowerShell and Azure CLI block to create the same client-secret identity.", ["One command block", "Azure CLI", "Client-secret connection"], ["Check CLI and permissions", "Run the generated block once", "Copy the printed values", "Verify and save"], ["azure"]),
+      page("azure-federation", "Azure · Workload Identity Federation", "Connect an Entra app through ASTRA's public OIDC issuer without an Azure client secret.", ["Public HTTPS issuer", "Federated credential", "Short-lived tokens"], ["Check issuer and permissions", "Add exact trust values", "Grant Reader", "Verify and save"], ["azure"]),
       page(
         "gcp",
         "Connect Google Cloud",
-        "Connect a Google Cloud project with a dedicated service-account JSON key and verify each selected data source.",
+        "Choose a service-account JSON key or keyless Workload Identity Federation for a Google Cloud project.",
         [
           "Project-scoped collection",
           "Cloud resource inventory",
@@ -164,12 +167,14 @@ export const DOC_SECTIONS = [
         ],
         [
           "Open Integrations → Google Cloud",
-          "Create a dedicated service account with approved read access",
-          "Enter its JSON key and verify regions",
+          "Choose a service-account key or federation",
+          "Grant read access to a dedicated service account",
           "Choose data sources and check collection history",
         ],
         ["collection-health"],
       ),
+      page("gcp-key", "Google Cloud · JSON key", "Create a dedicated service account and JSON key, then verify the project in ASTRA.", ["Console setup", "Service-account key", "Project read roles"], ["Check permissions and APIs", "Create account and key", "Paste JSON key", "Verify and save"], ["gcp"]),
+      page("gcp-federation", "Google Cloud · Workload Identity Federation", "Connect through ASTRA's public OIDC issuer and service-account impersonation without a JSON key.", ["Public HTTPS issuer", "Identity pool and provider", "Short-lived tokens"], ["Check issuer and permissions", "Create provider and service account", "Grant exact subject trust", "Verify and save"], ["gcp"]),
       page(
         "kubernetes",
         "Connect Kubernetes",

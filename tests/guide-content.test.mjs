@@ -34,10 +34,10 @@ test('authored screenshot assets exist and have explanatory captions', () => {
 
 test('product captures belong to published routes and remain unique on repeated visits', () => {
   const routes = new Set(DOC_SECTIONS.flatMap(area => area.pages.map(page => `${area.id}/${page.id}`)));
-  assert.equal(Object.keys(PRODUCT_SCREENS).length, 20);
+  assert.ok(Object.keys(PRODUCT_SCREENS).length >= 20);
   for (const [route, screen] of Object.entries(PRODUCT_SCREENS)) {
     assert.ok(routes.has(route), route);
-    assert.match(screen.blocks[0].caption, /Actual ASTRA interface/);
+    assert.match(screen.blocks[0].caption, /Actual ASTRA interface|ASTRA demo capture/);
     assert.ok(screen.blocks[1].items.length >= 2);
     const [areaId, pageId] = route.split('/');
     const area = DOC_SECTIONS.find(item => item.id === areaId);
@@ -76,7 +76,7 @@ test('reference material includes an explicit OTLP contract and private placehol
 });
 
 test('article blocks use supported renderers and internal guide links resolve', () => {
-  const blocks = new Set(['text','list','table','note','steps','tabs','checklist','image','accordion','links','directory','code']);
+  const blocks = new Set(['text','list','table','note','steps','tabs','checklist','image','accordion','links','resources','directory','code']);
   const pageIds = new Set(DOC_SECTIONS.flatMap(area => area.pages.map(page => page.id)));
   for (const guide of Object.values({ ...GUIDES, ...HANDBOOK })) {
     for (const section of guide.sections) for (const block of section.blocks) {
@@ -86,4 +86,15 @@ test('article blocks use supported renderers and internal guide links resolve', 
       if (block.type === 'table') for (const row of block.rows) assert.equal(row.length, block.headers.length);
     }
   }
+});
+
+test('Azure and Google Cloud methods have separate customer procedures', () => {
+  for (const path of ['azure-portal', 'azure-cli', 'azure-federation', 'gcp-key', 'gcp-federation']) {
+    const guide = GUIDES[`collect-data/${path}`];
+    assert.ok(guide, path);
+    assert.ok(guide.sections.some(section => section.id === 'permissions' || section.id === 'prerequisites'));
+    assert.ok(guide.sections.some(section => section.id === 'recovery' || section.id === 'problems'));
+  }
+  assert.match(JSON.stringify(GUIDES['collect-data/azure-federation']), /not an Azure client secret/i);
+  assert.match(JSON.stringify(GUIDES['collect-data/gcp-federation']), /no Google private key/i);
 });

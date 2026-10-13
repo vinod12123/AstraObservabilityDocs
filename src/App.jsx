@@ -403,6 +403,7 @@ export function App() {
               key={`${active.section.id}/${active.page.id}`}
             section={active.section}
             page={active.page}
+            theme={theme}
             onHome={onHome}
             onPage={onPage}
           />

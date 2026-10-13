@@ -2,15 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Clock, Check, CaretDown, Copy, X, MagnifyingGlassPlus, BookOpenText } from '@phosphor-icons/react';
 import { findPageById, DOC_SECTIONS, ALL_PAGES } from './docsData';
 import { getGuide } from './guideContent';
+import { imageSourceForTheme } from './guideImages';
 
 function GuideTabs({ tabs }) {
   const [selected,setSelected]=useState(0);
   return <div className="guide-tabs"><div role="tablist" aria-label="Choose a path">{tabs.map((tab,index)=><button key={tab.title} role="tab" aria-selected={selected===index} id={`tab-${index}`} aria-controls={`panel-${index}`} tabIndex={selected===index?0:-1} onKeyDown={e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const next=(selected+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length;setSelected(next);e.currentTarget.parentElement.children[next].focus();}}} onClick={()=>setSelected(index)}>{tab.title}</button>)}</div><div role="tabpanel" id={`panel-${selected}`} aria-labelledby={`tab-${selected}`}><h3>{tabs[selected].title}</h3><p>{tabs[selected].text}</p><div className="expected-result"><Check size={18}/><p><strong>Verify the result</strong>{tabs[selected].next}</p></div></div></div>;
 }
 
-function GuideImage({block}) {
+function GuideImage({block, theme}) {
   const dialog=useRef(null);
-  return <figure className="guide-figure"><button className="image-expand" onClick={()=>dialog.current.showModal()} aria-label={`Enlarge ${block.title}`}><img src={block.src} alt={block.title} loading="lazy"/><span><MagnifyingGlassPlus size={18}/> Enlarge image</span></button><figcaption>{block.caption}</figcaption><dialog ref={dialog} className="image-dialog" onClick={e=>{if(e.target===dialog.current)dialog.current.close()}}><button autoFocus onClick={()=>dialog.current.close()} aria-label="Close image"><X size={22}/></button><img src={block.src} alt={block.title}/><p>{block.caption}</p></dialog></figure>;
+  const source=imageSourceForTheme(block,theme);
+  return <figure className="guide-figure"><button className="image-expand" onClick={()=>dialog.current.showModal()} aria-label={`Enlarge ${block.title}`}><img src={source} alt={block.title} loading="lazy"/><span><MagnifyingGlassPlus size={18}/> Enlarge image</span></button><figcaption>{block.caption}</figcaption><dialog ref={dialog} className="image-dialog" onClick={e=>{if(e.target===dialog.current)dialog.current.close()}}><button autoFocus onClick={()=>dialog.current.close()} aria-label="Close image"><X size={22}/></button><img src={source} alt={block.title}/><p>{block.caption}</p></dialog></figure>;
 }
 
 function Checklist({items}) {
@@ -23,7 +25,7 @@ function CodeExample({block}) {
   return <div className="guide-code"><header><span>{block.language}</span><button onClick={async()=>{try{await navigator.clipboard.writeText(block.value);setStatus('Copied')}catch{setStatus('Select and copy the text')}}}>{status}</button></header><pre><code>{block.value}</code></pre></div>;
 }
 
-export default function GuideArticle({section,page,onHome,onPage}) {
+export default function GuideArticle({section,page,onHome,onPage,theme}) {
   const guide=getGuide(section,page);
   const [active,setActive]=useState(guide.sections[0].id);
   const [copied,setCopied]=useState(false);
@@ -50,7 +52,7 @@ export default function GuideArticle({section,page,onHome,onPage}) {
       case 'steps': return <ol className="editorial-steps" key={index}>{block.items.map(([title,copy])=><li key={title}><h3>{title}</h3><p>{copy}</p></li>)}</ol>;
       case 'tabs': return <GuideTabs key={index} tabs={block.tabs}/>;
       case 'checklist': return <Checklist key={index} items={block.items}/>;
-      case 'image': return <GuideImage key={index} block={block}/>;
+      case 'image': return <GuideImage key={index} block={block} theme={theme}/>;
       case 'accordion': return <div className="guide-accordions" key={index}>{block.items.map(([title,copy])=><details key={title}><summary>{title}<CaretDown size={16}/></summary><p>{copy}</p></details>)}</div>;
       case 'links': return <div className="topic-directory" key={index}>{block.ids.map(findPageById).filter(Boolean).map(linkCard)}</div>;
       case 'resources': return <ul key={index} className="guide-bullets">{block.items.map(([label,url])=><li key={url}><a href={url} target="_blank" rel="noopener noreferrer">{label} ↗</a></li>)}</ul>;

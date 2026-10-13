@@ -840,6 +840,14 @@ export const DOC_SECTIONS = [
     icon: "brain",
     pages: [
       page(
+        "intelligence-overview",
+        "Choose an ASTRA AI tool",
+        "Find the right tool for an incident, workload review, application error, or question.",
+        ["Agents", "Analyzer", "Code", "Ask ASTRA"],
+        ["Identify the question", "Check the required data and access", "Open the focused guide"],
+        ["astra-agents", "analyzer", "code", "ask-astra"],
+      ),
+      page(
         "astra-agents",
         "ASTRA agents",
         "Watch specialized ASTRA agents collaborate on incidents and investigations.",
@@ -855,7 +863,7 @@ export const DOC_SECTIONS = [
           "Review agent findings",
           "Validate suggested actions",
         ],
-        ["analyzer", "incidents"],
+        ["intelligence-overview", "agent-settings", "incidents"],
       ),
       page(
         "analyzer",
@@ -868,7 +876,7 @@ export const DOC_SECTIONS = [
           "Review score drivers",
           "Open supporting evidence",
         ],
-        ["workloads", "optimization"],
+        ["intelligence-overview", "workloads", "optimization"],
       ),
       page(
         "code",
@@ -881,7 +889,7 @@ export const DOC_SECTIONS = [
           "Review evidence and proposal",
           "Validate changes in your engineering workflow",
         ],
-        ["errors", "requests"],
+        ["intelligence-overview", "errors", "requests"],
       ),
       page(
         "ask-astra",
@@ -898,7 +906,7 @@ export const DOC_SECTIONS = [
           "Ask a focused question",
           "Open cited evidence",
         ],
-        ["analyzer", "concepts"],
+        ["intelligence-overview", "analyzer", "concepts"],
       ),
     ],
   },
@@ -984,6 +992,19 @@ export const DOC_SECTIONS = [
         ],
         ["members", "audit"],
       ),
+    ],
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: "gear",
+    pages: [
+      page("settings-overview", "Settings overview", "Choose the right organization setting and understand the access needed to change it.", ["AI providers", "API keys", "Agent and remediation controls", "Data deletion"], ["Open Settings", "Choose a setting", "Review its impact before saving"], ["ai-llm", "api-keys", "agent-settings", "remediation-policy", "data-deletion"]),
+      page("ai-llm", "AI / LLM providers", "Configure and test the models ASTRA uses for AI evaluation.", ["Provider credentials", "Model and default", "Connection test", "Usage pricing"], ["Open Settings → AI / LLM Providers", "Add a provider and model", "Test the connection", "Set the intended default"], ["settings-overview", "ask-astra"]),
+      page("api-keys", "API keys", "Create organization-scoped keys for telemetry ingestion and handle the secret safely.", ["Ingestion scopes", "One-time secret", "Key inventory"], ["Open Settings → API keys", "Create a named key", "Copy the secret once", "Verify ingestion"], ["settings-overview", "opentelemetry"]),
+      page("agent-settings", "ASTRA agents settings", "Control which specialist agents can run and review their autonomy preview.", ["Specialist switches", "Run statistics", "Autonomy matrix", "Policy link"], ["Open Settings → ASTRA agents", "Review the catalog", "Change specialist state if authorized", "Review the autonomy preview"], ["settings-overview", "remediation-policy", "astra-agents"]),
+      page("remediation-policy", "Remediation policy", "Control whether proposed fixes can execute, who approves them, and the safety limits.", ["Kill switch", "Dry run and live", "Approval policies", "Action catalogue", "Executor credentials"], ["Open Settings → Remediation policy", "Start with dry run and manual approval", "Review limits and actions", "Verify a plan before allowing live execution"], ["settings-overview", "agent-settings"]),
+      page("data-deletion", "Data deletion", "Understand and safely use workload, incident, and organization-data deletion controls.", ["Removed workloads", "Stale workload purge", "Incident purge", "Organization data destruction"], ["Open Settings → Data deletion", "Choose the smallest necessary action", "Review the preview and what remains", "Confirm only after checking the scope"], ["settings-overview", "audit"]),
     ],
   },
   {

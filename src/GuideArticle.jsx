@@ -53,6 +53,7 @@ export default function GuideArticle({section,page,onHome,onPage}) {
       case 'image': return <GuideImage key={index} block={block}/>;
       case 'accordion': return <div className="guide-accordions" key={index}>{block.items.map(([title,copy])=><details key={title}><summary>{title}<CaretDown size={16}/></summary><p>{copy}</p></details>)}</div>;
       case 'links': return <div className="topic-directory" key={index}>{block.ids.map(findPageById).filter(Boolean).map(linkCard)}</div>;
+      case 'resources': return <ul key={index} className="guide-bullets">{block.items.map(([label,url])=><li key={url}><a href={url} target="_blank" rel="noopener noreferrer">{label} ↗</a></li>)}</ul>;
       case 'directory': return <div className="topic-directory" key={index}>{ALL_PAGES.filter(item=>item.sectionId===block.sectionId&&item.id!==page.id).map(linkCard)}</div>;
       default: return null;
     }

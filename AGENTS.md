@@ -6,6 +6,8 @@ Do not generate design images unless explicitly requested. Implement requested u
 
 Use varied, task-oriented articles instead of repeating one card template. Preserve ASTRA icons and expandable sidebar navigation, support light/dark themes, and include concrete field-by-field workflows. Use actual product screenshots only after removing sensitive identifiers and credentials. Keep internal deployment and developer runbooks out of customer documentation. Dynatrace is a layout reference, not a source for ASTRA feature claims.
 
+For customer onboarding with several setup methods, publish a short chooser and a separate, self-contained guide for each method. Write for a newcomer: explain the outcome, prerequisites and permissions, what to do when access is missing, exact product and provider steps, expected result, verification, and method-specific failure recovery. Do not mix all methods into one abbreviated procedure.
+
 Run the local server yourself and open the preview in the browser available to this environment. Do not give the user server-start instructions when you can run it.
 
 Before making substantial visual changes, use the Product Design plugin's `get-context` skill when the visual source is unclear or no longer matches the current goal. When the user gives durable prototype-specific design feedback, preferences, or decisions, record them in `AGENTS.md`.

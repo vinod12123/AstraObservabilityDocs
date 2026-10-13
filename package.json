@@ -4,9 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && node scripts/prepare-sites-build.mjs",
-    "preview": "vite preview",
+    "predev": "node scripts/build-search-index.mjs",
+    "dev": "vite --host 0.0.0.0 --port 4173",
+    "build": "node scripts/build-search-index.mjs && vite build && node scripts/prepare-sites-build.mjs",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
+    "test:docs-index": "node --test tests/docs-index.test.mjs",
     "test:sites": "node --test tests/sites-worker.test.mjs"
   },
   "dependencies": {

@@ -1,5 +1,7 @@
 import { HANDBOOK, readingTime } from './handbookContent.js';
 import { PRODUCT_SCREENS } from './productScreenshots.js';
+import { AWS_ONBOARDING_GUIDES } from './awsOnboardingGuides.js';
+import { CLOUD_CREDENTIAL_GUIDES } from './cloudCredentialGuides.js';
 // Customer guidance is authored separately from navigation; no credentials or deployment runbooks.
 export const GROUPS = [
   { label: 'Essentials', ids: ['get-started', 'collect-data'] },
@@ -17,6 +19,8 @@ const steps = (...items) => ({ type: 'steps', items });
 const screenshot = (title) => ({ type: 'image', src: '/guides/workload-metrics.png', title: 'ASTRA workload inventory and scope filters', caption: 'Actual local ASTRA workload inventory with no matching workloads in the selected window. Account details are redacted. No telemetry has been fabricated.' });
 
 export const GUIDES = {
+  ...AWS_ONBOARDING_GUIDES,
+  ...CLOUD_CREDENTIAL_GUIDES,
   'notifications/email': {
     type: 'Connection guide', time: '6 min', sections: [
       section('prepare-email', 'Before you connect SMTP', [text('Connect an Email channel to deliver monitor state changes to your team. Obtain SMTP settings from your mail administrator before opening the form.'), list('SMTP hostname, port, and TLS mode.', 'An authorized sender address and recipient addresses.', 'Username and password or app password, if required by your mail provider.', 'Permission to manage notification channels in the current organization.'), note('Access required', 'The Add Email action requires integrations.channels.manage. If it is unavailable, ask your organization administrator to review your role.')]),

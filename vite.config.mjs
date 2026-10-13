@@ -10,10 +10,13 @@ export default defineConfig({
   },
   server: {
     host: "0.0.0.0",
-    allowedHosts: ["terminal.local"],
+    allowedHosts: ["terminal.local", "host.docker.internal"],
     warmup: {
       clientFiles: ["./src/main.jsx"],
     },
+  },
+  preview: {
+    allowedHosts: ["host.docker.internal"],
   },
   plugins: [react()],
 });
